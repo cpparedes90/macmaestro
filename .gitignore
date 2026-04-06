@@ -1,0 +1,74 @@
+# ══════════════════════════════════════════════
+#  MacMaestro — .gitignore
+#  Solo archivos de marketing se publican en GitHub.
+#  El código fuente NUNCA se commitea al repo público.
+# ══════════════════════════════════════════════
+
+# ── 🔒 CÓDIGO FUENTE — NUNCA SUBIR ──
+src/
+*.py
+*.sh
+*.js
+!landing/script.js
+
+# ── 📦 Binarios / Instaladores ──
+*.dmg
+*.pkg
+*.app
+dist/
+build/
+
+# ── 🔑 Secretos ──
+*.secret
+*.env
+.env
+.env.*
+secrets/
+
+# ── 🐍 Python ──
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+.tox/
+.nox/
+.coverage
+.cache
+.pytest_cache/
+.mypy_cache/
+venv/
+env/
+.venv/
+ENV/
+
+# ── 🍎 macOS ──
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.apdisk
+
+# ── 📊 Runtime / Datos de usuario ──
+*.log
+reportes/
+*.plist
+reglas.json
+integrity_checksums.json
+
+# ── 🛠️ IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

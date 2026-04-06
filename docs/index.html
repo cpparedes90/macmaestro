@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacMaestro — macOS File Organizer Suite</title>
+  <meta name="description" content="Professional-grade, offline-first macOS file organization suite. Automatically sort, clean, and manage your Mac — with a beautiful web control panel.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#050709;--surface:#0c0e14;--card:#111318;--card2:#161923;
+      --border:#1c2030;--accent:#7c3aed;--accent2:#a855f7;--glow:rgba(124,58,237,.35);
+      --green:#10b981;--blue:#3b82f6;--yellow:#f59e0b;
+      --text:#e2e8f0;--muted:#64748b;--muted2:#94a3b8;--radius:16px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 4rem;background:rgba(5,7,9,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .nav-logo{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.1rem}
+    .nav-logo span{font-size:1.4rem}
+    .nav-links{display:flex;gap:2rem}
+    .nav-links a{color:var(--muted2);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--text)}
+    .nav-cta{display:flex;align-items:center;gap:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;border-radius:10px;font-weight:600;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .2s;border:none}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted2)}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#9333ea);color:#fff;box-shadow:0 0 24px var(--glow)}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 40px var(--glow)}
+    .btn-large{padding:.9rem 2rem;font-size:1rem;border-radius:12px}
+    /* HERO */
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;position:relative}
+    .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(124,58,237,.2) 0%,transparent 70%);pointer-events:none}
+    .badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.4);color:#a78bfa;padding:.35rem 1rem;border-radius:50px;font-size:.8rem;font-weight:600;margin-bottom:2rem;animation:fadeDown .6s ease both}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.5rem;animation:fadeDown .6s .1s ease both}
+    .gradient-text{background:linear-gradient(135deg,#a78bfa,#7c3aed,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero-sub{font-size:1.2rem;color:var(--muted2);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;animation:fadeDown .6s .2s ease both}
+    .hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;animation:fadeDown .6s .3s ease both}
+    .hero-note{font-size:.8rem;color:var(--muted);animation:fadeDown .6s .4s ease both}
+    /* SCREENSHOT */
+    .screenshot-wrap{position:relative;max-width:960px;margin:3rem auto 0;animation:fadeUp .8s .5s ease both}
+    .screenshot-wrap::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,var(--accent),#60a5fa,var(--accent));border-radius:20px;z-index:-1;opacity:.5}
+    .screenshot-wrap img{width:100%;border-radius:18px;border:1px solid var(--border);box-shadow:0 40px 120px rgba(0,0,0,.8)}
+    /* SECTION */
+    section{padding:6rem 2rem;position:relative}
+    .container{max-width:1100px;margin:0 auto}
+    .section-label{color:var(--accent2);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+    .section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:1rem}
+    .section-sub{color:var(--muted2);font-size:1.05rem;max-width:520px;line-height:1.7}
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem;margin-top:3rem}
+    .feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;transition:all .3s;position:relative;overflow:hidden}
+    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}
+    .feature-card:hover{border-color:rgba(124,58,237,.5);transform:translateY(-3px)}
+    .feature-card:hover::before{opacity:1}
+    .feature-icon{font-size:2rem;margin-bottom:1rem}
+    .feature-card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .feature-card p{font-size:.875rem;color:var(--muted2);line-height:1.6}
+    .pro-badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-size:.65rem;font-weight:800;padding:.2rem .5rem;border-radius:6px;letter-spacing:.05em}
+    /* PRICING */
+    .pricing{background:var(--surface)}
+    .pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem;max-width:800px;margin-left:auto;margin-right:auto}
+    .pricing-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative}
+    .pricing-card.featured{border-color:var(--accent);box-shadow:0 0 60px rgba(124,58,237,.2)}
+    .pricing-card.featured::before{content:'⭐ MÁS POPULAR';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#9333ea);color:#fff;font-size:.7rem;font-weight:800;padding:.3rem 1rem;border-radius:0 0 10px 10px;letter-spacing:.08em}
+    .plan-name{font-size:.85rem;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
+    .plan-price{font-size:3rem;font-weight:900;line-height:1;margin-bottom:.25rem}
+    .plan-price span{font-size:1.2rem;font-weight:500;color:var(--muted2)}
+    .plan-desc{color:var(--muted2);font-size:.85rem;margin-bottom:1.75rem}
+    .plan-features{list-style:none;margin-bottom:2rem;display:flex;flex-direction:column;gap:.65rem}
+    .plan-features li{display:flex;align-items:flex-start;gap:.6rem;font-size:.875rem}
+    .plan-features .check{color:var(--green);flex-shrink:0}
+    .plan-features .cross{color:var(--muted);flex-shrink:0}
+    .plan-features li.muted-row{color:var(--muted)}
+    /* STEPS */
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}
+    .step{text-align:center}
+    .step-num{width:48px;height:48px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:#a78bfa;margin:0 auto 1rem}
+    .step h3{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .step p{font-size:.875rem;color:var(--muted2);line-height:1.6}
+    /* TABLE */
+    .compare-table{width:100%;border-collapse:collapse;margin-top:2rem}
+    .compare-table th{padding:1rem;text-align:center;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+    .compare-table th:first-child{text-align:left}
+    .compare-table td{padding:.85rem 1rem;border-bottom:1px solid var(--border);font-size:.9rem}
+    .compare-table td:not(:first-child){text-align:center}
+    .compare-table tr:hover td{background:rgba(255,255,255,.02)}
+    .compare-table .cat-row td{color:var(--muted2);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding-top:1.5rem;background:transparent!important}
+    /* VS SECTION */
+    .vs-section{background:var(--bg)}
+    .vs-winner{color:var(--green);font-weight:700}
+    .vs-loser{color:#ef4444;font-weight:500}
+    .vs-table th.mm-col{color:#a78bfa;background:rgba(124,58,237,.08)}
+    .vs-table td.mm-col{background:rgba(124,58,237,.05)}
+    .vs-table th.cmm-col{color:var(--muted)}
+    .vs-table .winner-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(16,185,129,.15);color:var(--green);padding:.15rem .5rem;border-radius:6px;font-size:.75rem;font-weight:700}
+    .vs-table .loser-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(239,68,68,.1);color:#ef4444;padding:.15rem .5rem;border-radius:6px;font-size:.75rem;font-weight:500}
+    .savings-banner{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(124,58,237,.15));border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:2rem;text-align:center;margin-top:2rem}
+    .savings-banner h3{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+    .savings-banner p{color:var(--muted2);font-size:.9rem}
+    /* FAQ */
+    .faq{max-width:700px;margin:3rem auto 0}
+    .faq-item{border-bottom:1px solid var(--border);padding:1.25rem 0;cursor:pointer}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.95rem}
+    .faq-q .ico{color:var(--muted);transition:transform .3s}
+    .faq-item.open .faq-q .ico{transform:rotate(45deg)}
+    .faq-a{color:var(--muted2);font-size:.9rem;line-height:1.7;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+    .faq-item.open .faq-a{max-height:300px;padding-top:.75rem}
+    /* CTA */
+    .cta-section{text-align:center;background:radial-gradient(ellipse at center,rgba(124,58,237,.2) 0%,transparent 70%)}
+    .cta-section h2{font-size:clamp(2rem,4vw,3.5rem);font-weight:900;letter-spacing:-.03em;margin-bottom:1rem}
+    .cta-section p{color:var(--muted2);font-size:1.1rem;margin-bottom:2.5rem}
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:3rem 2rem;text-align:center;color:var(--muted);font-size:.85rem}
+    footer a{color:var(--muted2);text-decoration:none}
+    footer a:hover{color:var(--text)}
+    .footer-links{display:flex;gap:2rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(30px);transition:all .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media(max-width:768px){nav{padding:1rem 1.5rem}.nav-links{display:none}.pricing-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>🗂️</span> MacMaestro</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Precios</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://github.com/cpparedes90/macmaestro" target="_blank">GitHub</a>
+  </div>
+  <div class="nav-cta">
+    <a href="https://github.com/cpparedes90/macmaestro" class="btn btn-ghost" target="_blank">Free / Open Source</a>
+    <a href="#pricing" class="btn btn-primary">Obtener Pro →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge">✨ Versión 3.0 disponible ahora</div>
+  <h1>Tu Mac organizado<br><span class="gradient-text">automáticamente.</span></h1>
+  <p class="hero-sub">MacMaestro organiza tus archivos, limpia el sistema y monitorea tu Mac — todo desde un panel web local. Sin nube. Sin suscripción. Sin complicaciones.</p>
+  <div class="hero-ctas">
+    <a href="#pricing" class="btn btn-primary btn-large">⚡ Obtener Pro — $14.99</a>
+    <a href="https://github.com/cpparedes90/macmaestro" class="btn btn-ghost btn-large" target="_blank">Ver en GitHub ↗</a>
+  </div>
+  <p class="hero-note">✅ macOS 12+ &nbsp;•&nbsp; ✅ Python 3.9+ &nbsp;•&nbsp; ✅ 100% Offline &nbsp;•&nbsp; ✅ MIT License</p>
+  <div class="screenshot-wrap">
+    <img src="https://raw.githubusercontent.com/cpparedes90/macmaestro/main/docs/screenshot.png" alt="MacMaestro Dashboard — Panel de control web">
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Todo lo que necesita<br>un Mac bien mantenido</h2>
+      <p class="section-sub">Más de 10 herramientas integradas en un solo panel. Sin instalar apps separadas.</p>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card"><div class="feature-icon">🗂️</div><h3>Organizador de archivos</h3><p>Clasifica automáticamente por tipo, fecha y reglas personalizadas. Funciona en Downloads, Desktop y cualquier carpeta.</p></div>
+      <div class="feature-card"><div class="feature-icon">👁️</div><h3>Monitor en tiempo real</h3><p>Detecta archivos nuevos al instante y los organiza sin que hagas nada. Corre silenciosamente en background.</p></div>
+      <div class="feature-card"><div class="feature-icon">📐</div><h3>Reglas personalizadas</h3><p>Define qué hacer con cada tipo de archivo. Por extensión, nombre, tamaño o fecha. Control total.</p></div>
+      <div class="feature-card"><div class="feature-icon">🧹</div><h3>Limpiador del sistema</h3><p>Elimina cachés, archivos temporales y logs de sistema. Libera gigas sin riesgo.</p></div>
+      <div class="feature-card"><div class="feature-icon">📦</div><h3>Desinstalador de apps</h3><p>Elimina apps por completo: binario, preferencias, soporte y cachés. Más profundo que el Finder.</p></div>
+      <div class="feature-card"><div class="feature-icon">📊</div><h3>Monitor de recursos</h3><p>CPU, RAM y disco en tiempo real. Sin abrir Activity Monitor.</p></div>
+      <div class="feature-card"><div class="pro-badge">PRO</div><div class="feature-icon">📅</div><h3>Programación automática</h3><p>Programa organizaciones diarias, semanales o personalizadas. Tu Mac se mantiene solo.</p></div>
+      <div class="feature-card"><div class="pro-badge">PRO</div><div class="feature-icon">📁</div><h3>Multi-carpetas</h3><p>Vigila Downloads, Desktop, Documentos y más al mismo tiempo. Sin límites.</p></div>
+      <div class="feature-card"><div class="pro-badge">PRO</div><div class="feature-icon">🔔</div><h3>Notificaciones nativas</h3><p>Recibe avisos de macOS cuando termine una organización. Sin tener el panel abierto.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:var(--surface)">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:1rem">
+      <div class="section-label">Cómo funciona</div>
+      <h2 class="section-title">Listo en 3 pasos</h2>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="step-num">1</div><h3>Instala</h3><p>Clona el repo y ejecuta <code style="background:var(--card);padding:.1rem .4rem;border-radius:5px;font-size:.85em">bash install.sh</code>. Listo en menos de 1 minuto.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Configura</h3><p>Abre <strong>localhost:7474</strong> en tu navegador. Define tus reglas y activa el watcher.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Olvídate</h3><p>MacMaestro trabaja en background. Tu Mac se mantiene ordenado solo, para siempre.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">Precios</div>
+      <h2 class="section-title">Simple y transparente</h2>
+      <p class="section-sub" style="margin:0 auto">Un solo pago. Sin suscripciones. Tuyo para siempre.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="pricing-card">
+        <div class="plan-name">Free · Open Source</div>
+        <div class="plan-price">$0 <span>/ siempre</span></div>
+        <div class="plan-desc">Para usuarios que quieren control total del código.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Panel web local</li>
+          <li><span class="check">✓</span> Organizador de archivos</li>
+          <li><span class="check">✓</span> Watcher (1 carpeta)</li>
+          <li><span class="check">✓</span> Hasta 3 reglas</li>
+          <li><span class="check">✓</span> Limpiador básico</li>
+          <li class="muted-row"><span class="cross">✗</span> Multi-carpetas</li>
+          <li class="muted-row"><span class="cross">✗</span> Programación automática</li>
+          <li class="muted-row"><span class="cross">✗</span> Notificaciones nativas</li>
+        </ul>
+        <a href="https://github.com/cpparedes90/macmaestro" class="btn btn-ghost" style="width:100%;justify-content:center" target="_blank">Descargar gratis</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="plan-name">Pro · Pago único</div>
+        <div class="plan-price" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">$14.99 <span style="-webkit-text-fill-color:var(--muted2)">/ único</span></div>
+        <div class="plan-desc">Todo lo de Free + features exclusivas Pro.</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> <strong>Todo lo del plan Free</strong></li>
+          <li><span class="check">✓</span> Reglas <strong>ilimitadas</strong></li>
+          <li><span class="check">✓</span> Multi-carpetas (ilimitadas)</li>
+          <li><span class="check">✓</span> Programación automática</li>
+          <li><span class="check">✓</span> Notificaciones nativas macOS</li>
+          <li><span class="check">✓</span> Duplicados con preview</li>
+          <li><span class="check">✓</span> Badge ⚡ Pro en dashboard</li>
+          <li><span class="check">✓</span> Soporte por email prioritario</li>
+        </ul>
+        <a href="https://gumroad.com/cpparedes90" class="btn btn-primary" style="width:100%;justify-content:center" target="_blank">⚡ Obtener Pro — $14.99</a>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:3rem">
+      <h3 style="text-align:center;font-size:1.1rem;margin-bottom:1rem;color:var(--muted2)">Comparación completa</h3>
+      <table class="compare-table">
+        <thead><tr><th>Feature</th><th>Free</th><th style="color:#a78bfa">Pro</th></tr></thead>
+        <tbody>
+          <tr class="cat-row"><td colspan="3">Core</td></tr>
+          <tr><td>Panel web local</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Organizador de archivos</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Watcher en tiempo real</td><td>1 carpeta</td><td style="color:#a78bfa;font-weight:600">Ilimitadas</td></tr>
+          <tr><td>Reglas personalizadas</td><td>Máx 3</td><td style="color:#a78bfa;font-weight:600">Ilimitadas</td></tr>
+          <tr><td>Limpiador, desinstalador, monitor</td><td>✅</td><td>✅</td></tr>
+          <tr class="cat-row"><td colspan="3">Exclusivo Pro</td></tr>
+          <tr><td>Programación automática (cron)</td><td>❌</td><td style="color:#a78bfa;font-weight:600">✅</td></tr>
+          <tr><td>Múltiples carpetas vigiladas</td><td>❌</td><td style="color:#a78bfa;font-weight:600">✅</td></tr>
+          <tr><td>Notificaciones nativas macOS</td><td>❌</td><td style="color:#a78bfa;font-weight:600">✅</td></tr>
+          <tr><td>Preview antes de borrar duplicados</td><td>❌</td><td style="color:#a78bfa;font-weight:600">✅</td></tr>
+          <tr><td>Soporte por email prioritario</td><td>❌</td><td style="color:#a78bfa;font-weight:600">✅</td></tr>
+          <tr class="cat-row"><td colspan="3">Garantías</td></tr>
+          <tr><td>100% Offline (sin servidor)</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Sin suscripción</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Código fuente disponible</td><td>✅</td><td>✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- VS CLEANMYMAC -->
+    <div class="reveal" style="margin-top:4rem">
+      <div style="text-align:center;margin-bottom:2rem">
+        <div class="section-label">¿Por qué MacMaestro?</div>
+        <h3 style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em">MacMaestro Pro vs <span style="color:var(--muted2)">CleanMyMac X</span></h3>
+        <p style="color:var(--muted2);font-size:.9rem;margin-top:.5rem">La alternativa inteligente que te ahorra dinero <strong style="color:var(--green)">cada año</strong></p>
+      </div>
+      <table class="compare-table vs-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Característica</th>
+            <th class="mm-col">⚡ MacMaestro Pro</th>
+            <th class="cmm-col">CleanMyMac X</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-row"><td colspan="3">💰 Precio</td></tr>
+          <tr>
+            <td>Modelo de pago</td>
+            <td class="mm-col"><span class="winner-badge">✅ Pago único</span></td>
+            <td><span class="loser-badge">🔄 Suscripción anual</span></td>
+          </tr>
+          <tr>
+            <td>Precio total (1 año)</td>
+            <td class="mm-col vs-winner">$14.99 — una vez</td>
+            <td class="vs-loser">$39.95 / año</td>
+          </tr>
+          <tr>
+            <td>Precio total (3 años)</td>
+            <td class="mm-col vs-winner">$14.99 — igual</td>
+            <td class="vs-loser">$119.85 acumulado</td>
+          </tr>
+          <tr>
+            <td>¿Funciona si cancelas?</td>
+            <td class="mm-col"><span class="winner-badge">✅ Para siempre</span></td>
+            <td><span class="loser-badge">❌ Se desactiva</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">🔐 Privacidad y Seguridad</td></tr>
+          <tr>
+            <td>100% offline (sin servidores)</td>
+            <td class="mm-col"><span class="winner-badge">✅ Garantizado</span></td>
+            <td><span class="loser-badge">❌ Requiere cuenta online</span></td>
+          </tr>
+          <tr>
+            <td>Tus datos en tu Mac solamente</td>
+            <td class="mm-col"><span class="winner-badge">✅ Siempre</span></td>
+            <td><span class="loser-badge">⚠️ Telemetría activa</span></td>
+          </tr>
+          <tr>
+            <td>Activación sin internet</td>
+            <td class="mm-col"><span class="winner-badge">✅ SHA-256 local</span></td>
+            <td><span class="loser-badge">❌ Requiere internet</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">🛠️ Transparencia y Control</td></tr>
+          <tr>
+            <td>Código fuente abierto</td>
+            <td class="mm-col"><span class="winner-badge">✅ MIT en GitHub</span></td>
+            <td><span class="loser-badge">❌ Código cerrado</span></td>
+          </tr>
+          <tr>
+            <td>Puedes modificarlo</td>
+            <td class="mm-col"><span class="winner-badge">✅ Totalmente</span></td>
+            <td><span class="loser-badge">❌ Prohibido</span></td>
+          </tr>
+          <tr>
+            <td>Sin actualizaciones forzadas</td>
+            <td class="mm-col"><span class="winner-badge">✅ Tú decides</span></td>
+            <td><span class="loser-badge">⚠️ Obligatorias</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">⚙️ Features Exclusivos de MacMaestro</td></tr>
+          <tr>
+            <td>Organizador de archivos por reglas</td>
+            <td class="mm-col"><span class="winner-badge">✅ Avanzado</span></td>
+            <td><span class="loser-badge">❌ No disponible</span></td>
+          </tr>
+          <tr>
+            <td>Watcher en tiempo real (carpetas)</td>
+            <td class="mm-col"><span class="winner-badge">✅ Multi-carpeta</span></td>
+            <td><span class="loser-badge">❌ No disponible</span></td>
+          </tr>
+          <tr>
+            <td>Panel web local (localhost:7474)</td>
+            <td class="mm-col"><span class="winner-badge">✅ Incluido</span></td>
+            <td><span class="loser-badge">❌ No disponible</span></td>
+          </tr>
+          <tr>
+            <td>Reportes HTML de sesión</td>
+            <td class="mm-col"><span class="winner-badge">✅ Completos</span></td>
+            <td><span class="loser-badge">❌ No disponible</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="savings-banner">
+        <h3>💰 Ahorra <span style="color:var(--green)">$120+ en 3 años</span> vs CleanMyMac X</h3>
+        <p>Con MacMaestro Pro pagas <strong>$14.99 una sola vez</strong> y lo usas para siempre.<br>CleanMyMac X te cobra $39.95 <em>cada año</em> — y si cancelas, pierdes el acceso.</p>
+        <a href="https://gumroad.com/cpparedes90" class="btn btn-primary btn-large" style="margin-top:1.5rem;display:inline-flex" target="_blank">⚡ Cambiarme a MacMaestro Pro — $14.99</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container reveal" style="max-width:800px">
+    <div style="text-align:center;margin-bottom:3rem">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Preguntas frecuentes</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item"><div class="faq-q">¿MacMaestro envía mis archivos a la nube? <span class="ico">+</span></div><div class="faq-a">No. MacMaestro es 100% offline. Todos los datos, reportes y configuraciones se guardan localmente en tu Mac (~/Agentes/). Nunca sale información de tu computadora.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Cómo funciona la licencia Pro offline? <span class="ico">+</span></div><div class="faq-a">Recibes una clave única formato MMRO-XXXX-XXXX-XXXX. La ingresas en el panel (Settings → Activar Pro) y se valida localmente via SHA-256. No necesitas internet después de recibirla.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Funciona en Apple Silicon (M1/M2/M3)? <span class="ico">+</span></div><div class="faq-a">Sí. MacMaestro está escrito en Python puro y funciona perfectamente en Macs con chip Apple Silicon y en Macs Intel.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Qué pasa si compro y no me gusta? <span class="ico">+</span></div><div class="faq-a">Puedes probar la versión gratuita (open source en GitHub) antes de comprar. Si tienes algún problema, escríbenos por email y lo resolvemos.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Puedo instalar la licencia en más de un Mac? <span class="ico">+</span></div><div class="faq-a">La licencia Pro es para uso personal — puedes instalarla en todos los Macs que sean de tu propiedad.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section reveal">
+  <div class="container">
+    <h2>Tu Mac merece estar<br><span class="gradient-text">siempre ordenado.</span></h2>
+    <p>Únete a los usuarios que ya disfrutan de un Mac que se mantiene solo.</p>
+    <a href="https://gumroad.com/cpparedes90" class="btn btn-primary btn-large" target="_blank">⚡ Obtener MacMaestro Pro — $14.99</a>
+    <p style="margin-top:1rem;font-size:.8rem;color:var(--muted)">Pago único · Sin suscripción · Descarga inmediata</p>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/cpparedes90/macmaestro" target="_blank">GitHub</a>
+    <a href="https://github.com/cpparedes90/macmaestro/blob/main/LICENSE" target="_blank">MIT License</a>
+    <a href="mailto:cp.paredes90@gmail.com">Soporte</a>
+    <a href="https://github.com/cpparedes90/macmaestro/blob/main/CHANGELOG.md" target="_blank">Changelog</a>
+  </div>
+  <p>© 2026 MacMaestro · Hecho con ❤️ para macOS · <a href="https://github.com/cpparedes90" target="_blank">@cpparedes90</a></p>
+</footer>
+
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.background =
+    window.scrollY > 50 ? 'rgba(5,7,9,.97)' : 'rgba(5,7,9,.85)';
+});
+</script>
+</body>
+</html>
